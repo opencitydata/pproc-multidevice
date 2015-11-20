@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es">
+
+<head>
+    <title>Contratos Zaragoza</title>
+
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+    <style>
+        .boton{margin-top:1em;}
+    </style>
+</head>
+
+<body>
+
+         <img class="pull-right" src="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png" alt="Ayuntamiento de Zaragoza" />
+            <h1>Presupuestos y precios de adjudicación de contratos</h1>
+			<script src="js/jquery-1.10.2.min.js"></script>
+			<p>
+			A continuación se muestran los contratos por servicio gestor firmados por el ayuntamiento de Zaragoza.
+			</p>
+			<p id="tabla"></p>
+            <script type="text/javascript">
+			var SPARQL_ENDPOINT = 'http://datos.zaragoza.es/sparql';
+			var query = 'PREFIX pproc: <http://contsem.unizar.es/def/sector-publico/pproc#> \
+PREFIX dcterms: <http://purl.org/dc/terms/> \
+SELECT DISTINCT ?uri ?titulo ?presu/1000 as ?presupuesto ?CIF ?pre/1000 as ?adjudicadoPor ?empresa \
+WHERE  \
+{ \
+?uri a <http://contsem.unizar.es/def/sector-publico/pproc#Contract>. \
+?uri dcterms:title ?titulo. \
+?uri <http://contsem.unizar.es/def/sector-publico/pproc#contractObject> ?pepe. \
+?pepe <http://contsem.unizar.es/def/sector-publico/pproc#contractEconomicConditions> ?luis. \
+?luis <http://contsem.unizar.es/def/sector-publico/pproc#budgetPrice> ?pablo. \
+?pablo <http://purl.org/goodrelations/v1#hasCurrencyValue> ?presu. \
+?pablo <http://purl.org/goodrelations/v1#valueAddedTaxIncluded> "true"^^xsd:boolean. \
+?uri <http://purl.org/procurement/public-contracts#tender> ?a. \
+?a <http://purl.org/procurement/public-contracts#offeredPrice> ?po. \
+?po <http://purl.org/goodrelations/v1#hasCurrencyValue> ?pre. \
+?po <http://purl.org/goodrelations/v1#valueAddedTaxIncluded> "true"^^xsd:boolean. \
+?a   <http://purl.org/procurement/public-contracts#supplier> ?empresaid. \
+?empresaid <http://schema.org/name> ?empresa. \
+?empresaid <http://www.w3.org/ns/org#identifier> ?CIF. \
+} \
+ORDER BY DESC(?presu)';
+	$.getJSON(SPARQL_ENDPOINT + '?query=' + encodeURIComponent(query) + '&format=application%2Fsparql-results%2Bjson&timeout=0')
+   .success(function(data) {
+	var feature;
+	var table = '<table>';
+	table += '<tr> <td><h2>Titulo</h2></td> <td><h2>Presupuesto</h2></td> <td><h2>AdjudicadoPor</h2></td> <td><h2>Empresa</h2></td></tr>';
+	for (var i = 0; i < data.results.bindings.length; i++) {
+				feature = data.results.bindings[i];
+				table += '<tr><td>' + '<a href='+feature.uri.value+'>'+feature.titulo.value+'</a></td> <td>' + feature.presupuesto.value + '</td> <td>' + feature.adjudicadoPor.value + '</td> <td>' + '<a href="adjudicadosCIF.html?cif='+feature.CIF.value+'">'+feature.empresa.value + '</a>'+ '</td></tr>';  
+				}
+	table += '</table>';
+	document.getElementById("tabla").innerHTML = table;
+
+        });
+            </script>
+</body>
+
+</html>

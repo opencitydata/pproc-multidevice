@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es">
+
+<head>
+    <title>Contratos Zaragoza</title>
+
+
+    <link rel="stylesheet" href="C:\Users\Luis\Documents\Universidad\TFG\bootstrap-3.3.5-dist\css\bootstrap.min.css">
+	<script src="C:\Users\Luis\Documents\Universidad\TFG\bootstrap-3.3.5-dist\js\bootstrap.min.js"></script>
+	<link rel="shortcut icon" type="image/x-icon" href="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png">
+
+</head>
+
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="colmd-6">
+			<img class="pull-rigth" src="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png" alt="Ayuntamiento de Zaragoza" />
+            <h1>Contratos Zaragoza</h1>
+			<h3> A continuación se muestran distintos datos públicos firmados por el ayuntamiento de Zaragoza </h3>
+			</div>
+			<div class="colmd-6">
+			<p>
+			<a href="serviciogestor.html">Lista de contratos por servicio gestor</a>
+			<br>
+			<a href="empresas2014.html">Empresas que han trabajado con la administración pública en 2014</a>
+			<br>
+			<a href="100contratos.html">100 contratos más caros en millones</a>
+			<br>
+			<a href="presupuestoVSasignado.html">Buscar presupuestos y precios de adjudicación de contratos</a>
+			<br>
+			Contratos asignados por CIF de empresa:<br>
+			
+			<script>
+			function updateHREFcif() {
+			document.getElementById('ccif').href = 'adjudicadosCIF.html?cif=' + document.forms[0].cif.value;
+			}
+			</script>
+			<form>
+				<input type="text" name="cif" onchange="updateHREFcif();">
+				<a id="ccif" href="javascript:alert('Please enter some values.');void('');">Buscar por CIF</a>
+			</form>
+			<br>
+			Contratos asignados por más de:<br>
+			
+			<script>
+			function updateHREFprecio() {
+			document.getElementById('price').href = 'buscarPorPrecio.html?precio=' + document.forms[1].precio.value;
+			}
+			</script>
+			<form>
+				<input type="text" name="precio" onchange="updateHREFprecio();"> €
+				<a id="price" href="javascript:alert('Please enter some values.');void('');">Buscar por precio</a>
+			</form>
+			<br>
+			
+			</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
