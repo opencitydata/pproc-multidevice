@@ -1,0 +1,246 @@
+1. Consulta de todos los contratos que puedan ordenarse por los distintos campos (título, servicio gestor, adjudicatario, precio) y organizado por años y meses.
+			*max(?ServicioGestor) -> Sin acento |||| min(?ServicioGestor) -> Con acento |||| ucase -> Mayúsculas
+	SELECT DISTINCT ?uri min(?titulo) as ?Titulo min(?nombre) as ?Nombre ucase(replace(replace(replace(?cif," ",""),"-",""),"/.","")) as ?Cif min(?servicioGestor) as ?ServicioGestor ?id ?precio
+	WHERE {
+		?uri a pproc:Contract.
+		?uri dcterms:title ?titulo.
+		?uri pc:tender ?tender.
+		?tender a pproc:FormalizedTender.
+		?tender pproc:formalizedDate ?fechaFormalizacion.
+		OPTIONAL {?tender   pc:supplier ?empresaid.}
+		OPTIONAL {?empresaid <http://www.w3.org/ns/org#identifier> ?cif.}
+		OPTIONAL {?empresaid <http://schema.org/name> ?nombre.}
+		OPTIONAL {?uri pproc:managingDepartment ?managingDepartment.}
+		OPTIONAL {?managingDepartment dcterms:title ?servicioGestor.}
+		OPTIONAL {?managingDepartment dcterms:identifier ?id.}
+		OPTIONAL {?tender pc:offeredPrice ?offeredPriceVAT.
+				?offeredPriceVAT gr:hasCurrencyValue ?precio.
+				?offeredPriceVAT gr:valueAddedTaxIncluded "true"^^xsd:boolean.}
+		FILTER ( ?fechaFormalizacion >= "2012-01-01"^^xsd:date )
+		FILTER ( ?fechaFormalizacion <= "2016-01-01"^^xsd:date )
+	}
+GROUP BY ?uri ?cif ?id ?precio
+ORDER BY(?precio)
+	
+	Problemas encontrados:
+							1a. Líneas duplicadas por CIFs con formatos no estandarizados -> Imposible de resolver en general, con ucase y replace se salvan las diferencias mayúsculas/minúsculas y se eliminan ciertos caracteres (espacios, guiones y puntos).
+							1b. Líneas duplicadas por nombres de Servicio Gestor con y sin acentos y en mayúsculas/minúsculas -> Se resuelve utilizando min.
+							1c. Servicios Gestores sin ID, impide realizar búsquedas en función del servicio gestor -> Imposible de resolver.
+							1d. Líneas duplicadas por títulos de contrato con distinta codificación (Deberían ser todos UTF-8). -> Se resuelven algunos casos utilizando min.
+							1e. Líneas duplicadas por empresas distintas con el mismo CIF. Ejemplo contrato: 0283055-12. -> Imposible de resolver.
+							1f. Líneas duplicadas por empresas con y sin CIF, impide realizar búsquedas por empresa -> Imposible resolver.
+							1g. Empresas sin CIF, impide realizar búsquedas por empresa -> Imposible resolver.
+							1h. Líneas duplicadas por nombres de empresa con distinta codificación (Deberían ser todos UTF-8). -> Se resuelve utilizando min.
+							1i. Líneas duplicadas por error en precio de adjudicacion. Ejemplo contratos: 48014-14, 48516-14. -> Imposible resolver.
+							1j. Contratos triplicados (57748-15, 68356-15): empresa con cif, cif sin empresa, sin cif ni empresa -> Imposible resolver.
+							
+	
+2. Contratos adjudicados por CIF, por Empresa, por precio y por servicio gestoe. Mismos campos.  (Meto lo de formalizedTender, o nos interesan todos?)
+fn:replace(?cif,"-",""),
+	2.a CIF
+		SELECT DISTINCT ?uri min(?titulo) as ?Titulo min(?servicioGestor) as ?ServicioGestor ?id ?precio
+		WHERE {
+			?uri a pproc:Contract.
+			?uri dcterms:title ?titulo.
+			?uri pc:tender ?tender.
+			?tender a pproc:FormalizedTender.
+			?tender pproc:formalizedDate ?fechaFormalizacion.
+			OPTIONAL {?tender   pc:supplier ?empresaid.}
+			?tender pproc:formalizedDate ?fechaFormalizacion.
+			OPTIONAL {?empresaid <http://www.w3.org/ns/org#identifier> ?cif.}
+			OPTIONAL {?uri pproc:managingDepartment ?managingDepartment.}
+			OPTIONAL {?managingDepartment dcterms:title ?servicioGestor.}
+			OPTIONAL {?managingDepartment dcterms:identifier ?id.}
+			OPTIONAL {?tender pc:offeredPrice ?offeredPriceVAT.
+					  ?offeredPriceVAT gr:hasCurrencyValue ?precio.
+					  ?offeredPriceVAT gr:valueAddedTaxIncluded "true"^^xsd:boolean.}
+			FILTER(regex(replace(replace(replace(?cif," ",""),"-",""),"/.",""),"A28017895","i"))
+		}
+		GROUP BY ?uri ?id ?precio
+
+		Problemas encontrados:
+								2aa. Debido a que los CIFS no están normalizados, se ha utilizado REPLACE para eliminar espacios, guiones y puntos. Algunos CIFs deben ser corregidos debido a que sus errores no se corrigen con las sustituciones realizadas.
+		
+	2.b Empresa
+		SELECT DISTINCT ?empresa ucase(replace(replace(replace(?cif," ",""),"-",""),"/.","")) as ?Cif
+		WHERE { 
+			?uri a pproc:Contract. 
+			?uri pc:tender ?tender. 
+			?tender   pc:supplier ?empresaid. 
+			?empresaid <http://www.w3.org/ns/org#identifier> ?cif. 
+			?empresaid <http://schema.org/name> ?empresa. 
+			FILTER(regex(?empresa,"el corte","i")) 
+		}
+		
+		Problemas encontrados:
+								2ba. Debido a que los CIFS no están normalizados, se ha utilizado REPLACE para eliminar espacios, guiones y puntos. Algunos CIFs deben ser corregidos debido a que sus errores no se corrigen con las sustituciones realizadas.
+								2bb. Los nombres de las empresas no están normalizados (unas veces están con acentos y otras sin ellos, en ocasiones se añaden comentarios al nombre, existen distintas maneras de escribir sociedad anónima...). Debido a ello, en la lista puede salir una misma empresa varias veces.
+		
+	2.c Precio
+		SELECT DISTINCT ?uri min(?titulo) as ?Titulo ?nombre ucase(replace(replace(replace(?cif," ",""),"-",""),"/.","")) as ?Cif min(?servicioGestor) as ?ServicioGestor ?id ?precio
+		WHERE {
+			?uri a pproc:Contract.
+			?uri dcterms:title ?titulo.
+			?uri pc:tender ?tender.
+			?tender a pproc:FormalizedTender.
+			OPTIONAL {?tender   pc:supplier ?empresaid.}
+			?tender pproc:formalizedDate ?fechaFormalizacion.
+			OPTIONAL {?empresaid <http://www.w3.org/ns/org#identifier> ?cif.}
+			OPTIONAL {?empresaid <http://schema.org/name> ?nombre.}
+			OPTIONAL {?uri pproc:managingDepartment ?managingDepartment.}
+			OPTIONAL {?managingDepartment dcterms:title ?servicioGestor.}
+			OPTIONAL {?managingDepartment dcterms:identifier ?id.}
+			OPTIONAL {?tender pc:offeredPrice ?offeredPriceVAT.
+					  ?offeredPriceVAT gr:hasCurrencyValue ?precio.
+					  ?offeredPriceVAT gr:valueAddedTaxIncluded "true"^^xsd:boolean.}
+			FILTER(xsd:integer(?precio) > xsd:integer("40000000"))
+		}
+		GROUP BY ?uri ?nombre ?cif ?id ?precio
+		
+		Problemas encontrados:
+								Mismos que en consultas anteriores.
+		
+	2.d Servicio Gestor
+		SELECT DISTINCT min(?servicioGestor) as ?ServicioGestor ?id
+		WHERE { 
+			?uri a pproc:Contract. 
+			?uri pproc:managingDepartment ?managingDepartment.
+			?managingDepartment dcterms:title ?servicioGestor.
+			?managingDepartment dcterms:identifier ?id.
+			FILTER(regex(?servicioGestor,"","i")) 
+		}
+		GROUP BY(?id)
+		
+		Problemas encontrados:
+								2da. No salen todos los servicios gestores, solo aquellos que tienen un id asignado, porque se necesita para poder buscar por servicio gestor.
+								2db. Hay servicios gestores repetidos con distintos nombres, por lo que se utiliza min para eliminar las repeticiones.
+		
+3. Presupuesto de los contratos y su precio de adjudicacion, en el caso de los contratos con lotes, sumar el precio de éstos.
+	SELECT *
+	WHERE
+	{
+		{
+			SELECT DISTINCT ?uri ?titulo ?presupuesto
+			WHERE{
+				?uri a pproc:Contract.
+				?uri dcterms:title ?titulo.
+				?uri pproc:contractObject ?objeto.
+				?objeto pproc:contractEconomicConditions ?economia.
+				?economia pproc:budgetPrice ?budget.
+				?budget<http://purl.org/goodrelations/v1#hasCurrencyValue> ?presupuesto.
+				?budget<http://purl.org/goodrelations/v1#valueAddedTaxIncluded> "true"^^xsd:boolean.
+				FILTER(?presupuesto > 0)
+			}
+		}
+		{
+			SELECT ?uri SUM(?precio) as ?Precio ?fechaFormalizacion ?cif ?nombre
+			WHERE{
+				?uri a pproc:Contract.
+				?uri pc:tender ?tender.
+				?tender a pproc:FormalizedTender.
+				?tender pproc:formalizedDate ?fechaFormalizacion.
+				?tender   pc:supplier ?empresaid.
+				?empresaid <http://www.w3.org/ns/org#identifier> ?cif.
+				?empresaid <http://schema.org/name> ?nombre.
+				?tender pc:offeredPrice ?offeredPriceVAT.
+				?offeredPriceVAT gr:hasCurrencyValue ?precio.
+				?offeredPriceVAT gr:valueAddedTaxIncluded "true"^^xsd:boolean.
+			}
+			GROUP BY ?uri ?fechaFormalizacion ?cif ?nombre
+		}
+	}
+	ORDER BY desc(?presupuesto)
+	
+	Problemas encontrados:
+								3a. Más de un 10% de los contratos no tiene presupuesto o precio -> Imposible resolver.
+								3b. Errores importantes en datos, tanto en presupuesto como en precio de adjudicacion -> Imposible resolver.
+								3c. Adjudicatarios duplicados -> Se duplica precio de ajduicación -> Imposible resolver.
+								3d. Precios para periodos diferentes a los del presupuesto o por unidades sin totalizar (horas, potencia...) -> Imposible resolver.
+	
+4. Gráfica empresas con más contratos por CIF y nombre.
+	SELECT DISTINCT replace(replace(replace(?cif," ",""),"-",""),"/.","") as ?CIF COUNT(?Titulo) as ?Contratos 
+	WHERE {
+		?uri a <http://contsem.unizar.es/def/sector-publico/pproc#Contract>.
+		?uri dcterms:title ?Titulo.
+		?uri <http://purl.org/procurement/public-contracts#tender> ?a.
+		?a   <http://purl.org/procurement/public-contracts#supplier> ?empresaid.
+		?empresaid <http://www.w3.org/ns/org#identifier> ?cif.
+	}
+	GROUP BY replace(replace(replace(?cif," ",""),"-",""),"/.","")
+	ORDER BY desc(?Contratos)
+	LIMIT 20
+	
+	SELECT DISTINCT replace(replace(replace(?cif," ",""),"-",""),"/.","") as ?CIF min(?empresa) as ?Empresa COUNT(?Titulo) as ?Contratos 
+	WHERE {
+		?uri a <http://contsem.unizar.es/def/sector-publico/pproc#Contract>.
+		?uri dcterms:title ?Titulo.
+		?uri <http://purl.org/procurement/public-contracts#tender> ?a.
+		?a   <http://purl.org/procurement/public-contracts#supplier> ?empresaid.
+                ?empresaid <http://schema.org/name> ?empresa.
+		?empresaid <http://www.w3.org/ns/org#identifier> ?cif.
+	}
+	GROUP BY replace(replace(replace(?cif," ",""),"-",""),"/.","")
+	ORDER BY desc(?Contratos)
+	LIMIT 20
+	
+	Problemas encontrados:
+								Mismos que en consultas anteriores.
+
+	
+5. Gráfica presupuesto vs asignado. En porcentajes, 20 con más diferencia entre ambos.
+	SELECT ?uri ?titulo ?presupuesto ?nombre ?cif ?Precio ?presupuesto - ?Precio as ?Diff 100*?Precio/?presupuesto as ?Porcentaje
+	WHERE
+	{
+		{
+			SELECT DISTINCT ?uri ?presupuesto
+			WHERE{
+				?uri a pproc:Contract.
+				?uri pproc:contractObject ?objeto.
+				?objeto pproc:contractEconomicConditions ?economia.
+				?economia pproc:budgetPrice ?budget.
+				?budget<http://purl.org/goodrelations/v1#hasCurrencyValue> ?presupuesto.
+				?budget<http://purl.org/goodrelations/v1#valueAddedTaxIncluded> "true"^^xsd:boolean.
+				FILTER(?presupuesto > 0)
+			}
+		}
+		{
+			SELECT ?uri ?titulo SUM(?precio) as ?Precio ?cif ?nombre
+			WHERE{
+				?uri a pproc:Contract.
+                ?uri dcterms:title ?titulo.
+				?uri pc:tender ?tender.
+				?tender a pproc:FormalizedTender.
+				?tender   pc:supplier ?empresaid.
+				?empresaid <http://www.w3.org/ns/org#identifier> ?cif.
+				?empresaid <http://schema.org/name> ?nombre.
+				?tender pc:offeredPrice ?offeredPriceVAT.
+				?offeredPriceVAT gr:hasCurrencyValue ?precio.
+				?offeredPriceVAT gr:valueAddedTaxIncluded "true"^^xsd:boolean.
+			}
+			GROUP BY ?uri ?titulo ?cif ?nombre
+		}
+	}
+	ORDER BY desc(?Diff)
+	LIMIT 20
+	
+	Problemas encontrados:
+								5a. Datos incorrectos -> Imposible resolver.
+								5b. URIs no existentes que no permiten verificar la autenticidad de los datos -> Imposible resolver.
+								
+	
+6. Contratos según tipo de procedimiento
+	SELECT DISTINCT ?uri ?titulo ?procedimiento
+	WHERE{
+		?uri a pproc:Contract.
+		?uri dcterms:title ?titulo.
+		?uri pc:tender ?tender.
+		?tender a pproc:FormalizedTender.
+		?uri pproc:contractProcedureSpecifications ?procedureType.
+		?procedureType pproc:procedureType  ?procedimiento.
+	}
+	
+	Problemas encontrados:
+								Ninguno.
+								
+								
+PREFIX fn: <http://www.w3.org/2005/xpath-functions#>

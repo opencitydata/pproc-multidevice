@@ -2,7 +2,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es">
 
 	<head>
-		<meta charset="UTF-8">
 		<title>Contratos Zaragoza</title>
 		<link rel="shortcut icon" type="image/x-icon" href="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png">
 		<img class="pull-right" src="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png" alt="Ayuntamiento de Zaragoza" />
@@ -11,13 +10,13 @@
 	</head>
 
 	<body>
-		<h1>Contratos adjudicados a la empresa <div id="empresa"></div> con CIF <div id="cif"></div></h1>
-		<script src="js/consultas/adjudicadosCIF.js"></script>
+		<h1>Contratos adjudicados por el Servicio Gestor <div id="servicio"></div></h1>
+		<script src="js/consultas/adjudicadosServicioGestor.js"></script>
 		<p id="tabla">
 			<script>
-				adjudicadosCIF();
+				adjudicadosServicioGestor();
 			</script>
-		</p>		
+		</p>
 	</body>
 
 </html>

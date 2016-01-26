@@ -1,62 +1,78 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es">
 
-<head>
-    <title>Contratos Zaragoza</title>
+	<head>
+		<title>Contratos Zaragoza</title>
+		<link rel="shortcut icon" type="image/x-icon" href="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png">
+		<img class="pull-rigth" src="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png" alt="Ayuntamiento de Zaragoza" />
+	</head>
 
-
-    <link rel="stylesheet" href="C:\Users\Luis\Documents\Universidad\TFG\bootstrap-3.3.5-dist\css\bootstrap.min.css">
-	<script src="C:\Users\Luis\Documents\Universidad\TFG\bootstrap-3.3.5-dist\js\bootstrap.min.js"></script>
-	<link rel="shortcut icon" type="image/x-icon" href="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png">
-
-</head>
-
-<body>
-	<div class="container">
-		<div class="row">
-			<div class="colmd-6">
-			<img class="pull-rigth" src="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png" alt="Ayuntamiento de Zaragoza" />
-            <h1>Contratos Zaragoza</h1>
-			<h3> A continuación se muestran distintos datos públicos firmados por el ayuntamiento de Zaragoza </h3>
-			</div>
-			<div class="colmd-6">
-			<p>
-			<a href="serviciogestor.html">Lista de contratos por servicio gestor</a>
-			<br>
-			<a href="empresas2014.html">Empresas que han trabajado con la administración pública en 2014</a>
-			<br>
-			<a href="100contratos.html">100 contratos más caros en millones</a>
-			<br>
+	<body>		
+		<h1>Contratos Zaragoza</h1>
+		<h3> A continuación se muestran distintos datos públicos firmados por el ayuntamiento de Zaragoza </h3>
+		<p>
+			<a href="contratos.html" target="_blank">Lista de contratos</a>
+			</br>
+			</br>
 			<a href="presupuestoVSasignado.html">Buscar presupuestos y precios de adjudicación de contratos</a>
-			<br>
-			Contratos asignados por CIF de empresa:<br>
-			
+			</br>
+			</br>
+			<a href="tipoProcedimiento.html">Buscar en función del tipo de procedimiento</a>
+			</br>
+			</br>
+			<a href="graficaEmpresas.html">Gráfica número de contratos firmados por empresas</a>
+			</br>
+			</br>
+			<a href="graficaPresupuestoVSasignado.html">Gráfica presupuesto vs asignado</a>
+			</br>
+			</br>
+			Contratos asignados por CIF de empresa:
+			</br>
 			<script>
-			function updateHREFcif() {
-			document.getElementById('ccif').href = 'adjudicadosCIF.html?cif=' + document.forms[0].cif.value;
-			}
+				function updateHREFcif() {
+				document.getElementById('ccif').href = 'adjudicadosCIF.html?cif=' + document.forms[0].cif.value;
+				}
 			</script>
 			<form>
 				<input type="text" name="cif" onchange="updateHREFcif();">
 				<a id="ccif" href="javascript:alert('Please enter some values.');void('');">Buscar por CIF</a>
 			</form>
-			<br>
-			Contratos asignados por más de:<br>
-			
+			</br>
+			Contratos asignados por nombre de empresa:
+			</br>
 			<script>
-			function updateHREFprecio() {
-			document.getElementById('price').href = 'buscarPorPrecio.html?precio=' + document.forms[1].precio.value;
-			}
+				function updateHREFempresa() {
+				document.getElementById('eempresa').href = 'adjudicadosEmpresa.html?empresa=' + document.forms[1].empresa.value;
+				}
+			</script>
+			<form>
+				<input type="text" name="empresa" onchange="updateHREFempresa();">
+				<a id="eempresa" href="javascript:alert('Please enter some values.');void('');">Buscar por empresa</a>
+			</form>
+			</br>
+			Contratos asignados por más de:
+			</br>
+			<script>
+				function updateHREFprecio() {
+				document.getElementById('price').href = 'buscarPorPrecio.html?precio=' + document.forms[2].precio.value;
+				}
 			</script>
 			<form>
 				<input type="text" name="precio" onchange="updateHREFprecio();"> €
 				<a id="price" href="javascript:alert('Please enter some values.');void('');">Buscar por precio</a>
 			</form>
-			<br>
-			
-			</p>
-			</div>
-		</div>
-	</div>
-</body>
+			</br>
+			Contratos asignados por Servicio Gestor:
+			</br>
+			<script>
+				function updateHREFsg() {
+				document.getElementById('serges').href = 'adjudicadosServicioGestor.html?servicio=' + document.forms[3].sg.value;
+				}
+			</script>
+			<form>
+				<input type="text" name="sg" onchange="updateHREFsg();"> €
+				<a id="serges" href="javascript:alert('Please enter some values.');void('');">Buscar por servicio gestor</a>
+			</form>
+		</p>
+	</body>
 </html>
