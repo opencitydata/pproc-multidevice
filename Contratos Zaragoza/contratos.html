@@ -14,36 +14,54 @@
 		<link rel="shortcut icon" href="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png">
 		<link rel="stylesheet" type="text/css" href="css/main.css">
 		<meta charset="utf-8" /> 
-		<script src="js/d3/d3.min.js"></script>
 		<script src="js/jquery-1.10.2.min.js"></script>
-		<script src="js/consultas/presupuestoVSasignado.js"></script>	
+		<script src="js/consultas/contratos.js"></script>
 	</head>
+
 
 	<body>
 		<div class="app">
 			<div class="container">
-				<h1>Presupuestos y precios de adjudicación de contratos</h1>
+				<h1>Lista de contratos</h1>
 				<div class="row">
+					<div class="col-xs-4">
+						<select name="ordenar" id="ordenar_por" class="form-control">
+							<option value="?Titulo">Titulo</option>
+							<option value="desc(?Titulo)">Titulo Descendente</option>
+							<option value="?Nombre">Empresa</option>
+							<option value="desc(?Nombre)">Empresa Descendente</option>
+							<option value="?Cif">CIF</option>
+							<option value="desc(?Cif)">CIF Descendente</option>
+							<option value="?ServicioGestor">Servicio Gestor</option>
+							<option value="desc(?ServicioGestor)">Servicio Gestor Descendente</option>
+							<option value="?precio">Precio</option>
+							<option value="desc(?precio)">Precio Descendente</option>
+							<option value="?fechaFormalizacion">Fecha Formalización</option>
+							<option value="desc(?fechaFormalizacion)">Fecha Formalización Descendente</option>
+						</select>
+					</div>
 					<div class="col-xs-4">
 						<p id="sel_fecha"/>
 					</div>
-					<script>
-							sel_fecha();
-					</script>
 					<div class="col-xs-2">
 						<button type="button" class="btn btn-default" onclick="auxiliar()">Actualizar</button>
 					</div>
 					<br>
 					</br>
-				</div>
-				<p id="tabla">
 					<script>
-						var fecha = new Date();
-						var ano = fecha.getFullYear();
-						presupuestoVSasignado(ano);
+						sel_fecha();
 					</script>
-				</p>
+				</div>
 			</div>
+				<div class="container">
+						<p id="tabla">
+							<script type="text/javascript">
+								var fecha = new Date();
+								var ano_actual = fecha.getFullYear();
+								contratos("?fechaFormalizacion",ano_actual);
+							</script>
+						</p>
+				</div>
 		</div>
 	</body>
 

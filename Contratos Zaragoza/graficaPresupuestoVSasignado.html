@@ -13,20 +13,25 @@
 		<a href="javascript:history.back()"><img class="pull-left" src="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png" alt="Ayuntamiento de Zaragoza"></a>
 		<link rel="shortcut icon" href="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png">
 		<link rel="stylesheet" type="text/css" href="css/main.css">
-		<meta charset="utf-8" /> 
+		<meta charset="utf-8" />
+		<script src="js/d3/d3.min.js"></script>
 		<script src="js/jquery-1.10.2.min.js"></script>
+		<script src="js/consultas/graficaPresupuestoVSasignado.js"></script>
+		<style>
+			.liquidFillGaugeText { font-family: Helvetica; font-weight: bold; }
+		</style>
 	</head>
-
 	<body>
 		<div class="app">
 			<div class="container">
-				<h1>Contratos adjudicados a las empresas con nombre "<span id="empresa"></span>"</h1>
-				<script src="js/consultas/adjudicadosEmpresa.js"></script>
-				<p id="tabla">
-					<script>
-						adjudicadosEmpresa();
-					</script>
-				</p>
+				<h1>Presupuestos y precios de adjudicación de contratos</h1>
+				<div id="svg"></div>
+				<script>
+						if ((screen.width<1024) && (screen.height<768))
+							svgPresupuestovsAsignadoMovil();
+						else
+							svgPresupuestovsAsignado();
+				</script>
 			</div>
 		</div>
 	</body>
