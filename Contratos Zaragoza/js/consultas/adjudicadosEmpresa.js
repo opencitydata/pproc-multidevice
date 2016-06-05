@@ -1,4 +1,4 @@
-function adjudicadosEmpresa(){
+ï»¿function adjudicadosEmpresa(){
 //Se cogen los valores pasados por URI.
 //Se dividen por "&"
 var paramstr = window.location.search.substr(1);
@@ -11,14 +11,22 @@ for ( var i = 0; i < paramarr.length; i++) {
 }
 var fin = params['empresa'];
 //En caso de que haya tildes, se soluciona el problema
+fin = fin.replace(/%A1/g,"Ã¡");
+fin = fin.replace(/%81/g,"Ã");
+fin = fin.replace(/%A9/g,"Ã©");
+fin = fin.replace(/%89/g,"Ã‰");
+fin = fin.replace(/%AD/g,"Ã­");
+fin = fin.replace(/%8D/g,"Ã");
+fin = fin.replace(/%B3/g,"Ã³");
+fin = fin.replace(/%93/g,"Ã“");
+fin = fin.replace(/%BA/g,"Ãº");
+fin = fin.replace(/%9A/g,"Ãš");
+fin = fin.replace(/%B1/g,"Ã±");
+fin = fin.replace(/%91/g,"Ã‘");
 fin = fin.replace(/%20/g," ");
-fin = fin.replace(/%D3/g,"Ó");
-fin = fin.replace(/%F3/g,"ó");
-fin = fin.replace(/%E9/g,"é");
-fin = fin.replace(/%C9/g,"É");
-fin = fin.replace(/%D1/g,"Ñ");
-fin = fin.replace(/%CD/g,"Í");
-fin = fin.replace(/%ED/g,"í");
+fin = fin.replace(/%C3/g,"");
+
+
 //Se le asigna valor al div "empresa" del HTML
 document.getElementById("empresa").innerHTML = fin;
 console.log(fin);
@@ -33,7 +41,7 @@ var query = 'SELECT DISTINCT ?empresa ucase(replace(replace(replace(?cif," ","")
 			?empresaid <http://schema.org/name> ?empresa. \
 			FILTER(regex(?empresa,"'+fin+'","i")) \
 		}';
-//Se almacena en data toda la información devuelta en la consulta
+//Se almacena en data toda la informaciÃ³n devuelta en la consulta
 $.getJSON(SPARQL_ENDPOINT + '?query=' + encodeURIComponent(query) + '&format=application%2Fsparql-results%2Bjson&timeout=0')
 	.success(function(data) {
 		var feature;
@@ -43,13 +51,15 @@ $.getJSON(SPARQL_ENDPOINT + '?query=' + encodeURIComponent(query) + '&format=app
 		table += '<tr> <td><h2>Empresa</h2></td></tr>';
 		//Se recorre el json devuelto en la consulta
 		for (var i = 0; i < data.results.bindings.length; i++) {
-			//Por cada elemento devuelto se pasa la información a la tabla
+			//Por cada elemento devuelto se pasa la informaciÃ³n a la tabla
 			feature = data.results.bindings[i];
 			//El elemento devuelto incluye un enlace a los contratos de la empresa
 			table += '<tr><td>' + '<a href="adjudicadosCIF.html?cif='+feature.Cif.value+'">'+feature.empresa.value+'</td><td>' + feature.Cif.value + '</td></tr>';
 		}
 		//Se cierra la tabla
 		table += '</table>';
+		if (data.results.bindings.length == 0)
+			table = '</br><h3>No se encontaron empresas con dicho nombre</h3>';
 		//Se inserta el contenido de la tabla en el elemento "tabla" creado en el HTML
 		document.getElementById("tabla").innerHTML = table;
 });

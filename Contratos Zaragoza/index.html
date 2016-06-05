@@ -1,78 +1,121 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es">
-
+ï»¿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="es-Es" xmlns="http://www.w3.org/1999/xhtml">
 	<head>
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous"/>
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+		<meta name="format-detection" content="telephone=no"/>
+		<meta name="msapplication-tap-highlight" content="no"/>
+		<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width"/>
+		<a href="javascript:history.go(0)"><img class="pull-left" src="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png" alt="Ayuntamiento de Zaragoza"></a>
+		<link rel="shortcut icon" href="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png">
+		<link rel="stylesheet" type="text/css" href="css/main.css">
+		<meta charset="utf-8" /> 
 		<title>Contratos Zaragoza</title>
-		<link rel="shortcut icon" type="image/x-icon" href="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png">
-		<img class="pull-rigth" src="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png" alt="Ayuntamiento de Zaragoza" />
 	</head>
-
-	<body>		
-		<h1>Contratos Zaragoza</h1>
-		<h3> A continuación se muestran distintos datos públicos firmados por el ayuntamiento de Zaragoza </h3>
-		<p>
-			<a href="contratos.html" target="_blank">Lista de contratos</a>
-			</br>
-			</br>
-			<a href="presupuestoVSasignado.html">Buscar presupuestos y precios de adjudicación de contratos</a>
-			</br>
-			</br>
-			<a href="tipoProcedimiento.html">Buscar en función del tipo de procedimiento</a>
-			</br>
-			</br>
-			<a href="graficaEmpresas.html">Gráfica número de contratos firmados por empresas</a>
-			</br>
-			</br>
-			<a href="graficaPresupuestoVSasignado.html">Gráfica presupuesto vs asignado</a>
-			</br>
-			</br>
-			Contratos asignados por CIF de empresa:
-			</br>
-			<script>
-				function updateHREFcif() {
-				document.getElementById('ccif').href = 'adjudicadosCIF.html?cif=' + document.forms[0].cif.value;
-				}
-			</script>
-			<form>
-				<input type="text" name="cif" onchange="updateHREFcif();">
-				<a id="ccif" href="javascript:alert('Please enter some values.');void('');">Buscar por CIF</a>
-			</form>
-			</br>
-			Contratos asignados por nombre de empresa:
-			</br>
-			<script>
-				function updateHREFempresa() {
-				document.getElementById('eempresa').href = 'adjudicadosEmpresa.html?empresa=' + document.forms[1].empresa.value;
-				}
-			</script>
-			<form>
-				<input type="text" name="empresa" onchange="updateHREFempresa();">
-				<a id="eempresa" href="javascript:alert('Please enter some values.');void('');">Buscar por empresa</a>
-			</form>
-			</br>
-			Contratos asignados por más de:
-			</br>
-			<script>
-				function updateHREFprecio() {
-				document.getElementById('price').href = 'buscarPorPrecio.html?precio=' + document.forms[2].precio.value;
-				}
-			</script>
-			<form>
-				<input type="text" name="precio" onchange="updateHREFprecio();"> €
-				<a id="price" href="javascript:alert('Please enter some values.');void('');">Buscar por precio</a>
-			</form>
-			</br>
-			Contratos asignados por Servicio Gestor:
-			</br>
-			<script>
-				function updateHREFsg() {
-				document.getElementById('serges').href = 'adjudicadosServicioGestor.html?servicio=' + document.forms[3].sg.value;
-				}
-			</script>
-			<form>
-				<input type="text" name="sg" onchange="updateHREFsg();"> €
-				<a id="serges" href="javascript:alert('Please enter some values.');void('');">Buscar por servicio gestor</a>
-			</form>
-		</p>
+	<body>
+		<div class="app">
+			<div class="container">
+				<h1>Contratos Zaragoza</h1>
+				<h4> A continuaciÃ³n se muestran distintos datos pÃºblicos firmados por el ayuntamiento de Zaragoza </h4>
+				<p>
+					<a href="contratos.html">Lista de contratos</a>
+					</br>
+					</br>
+					<a href="presupuestoVSasignado.html">Presupuestos y precios de adjudicaciÃ³n de contratos</a>
+					</br> 
+					</br>
+					<a href="tipoProcedimiento.html">En funciÃ³n del tipo de procedimiento</a>
+					</br>
+					</br>
+					<a href="presupuestoProcedimiento.html">Totales y porcentajes de presupuestos de los contratos adjudicados en funciÃ³n del procedimiento</a>
+					</br>
+					<br>
+					<span id="numero_contratos"></span>
+					<script>
+						var aux = "";
+						if ((screen.width<1024) && (screen.height<768))
+							aux += "<a href=\"graficaEmpresas.html\">NÃºmero de contratos firmados por empresas</a>"
+						else
+							aux += "<a href=\"graficaEmpresas.html\">GrÃ¡fica nÃºmero de contratos firmados por empresas</a>"
+						document.getElementById("numero_contratos").innerHTML = aux;
+					</script>
+					</br>
+					</br>
+					<span id="presupuestoVSasignado"></span>
+					<script>
+						var aux = "";
+						if ((screen.width<1024) && (screen.height<768))
+							aux += "<a href=\"graficaPresupuestoVSasignado.html\">ComparaciÃ³n presupuesto vs asignado</a>"
+						else
+							aux += "<a href=\"graficaPresupuestoVSasignado.html\">GrÃ¡fica presupuesto vs asignado</a>"
+						document.getElementById("presupuestoVSasignado").innerHTML = aux;
+					</script>
+					</br>
+					</br>
+					Contratos asignados por CIF de empresa:
+					</br>
+					<script>
+						function updateHREFcif() {
+							document.getElementById('ccif').href = 'adjudicadosCIF.html?cif=' + document.forms[0].cif.value;
+						}
+					</script>
+					<form>
+						<input type="text" id="cif" onchange="updateHREFcif();">
+							<a id="ccif" href="javascript:alert('Por favor, introduce algÃºn valor.');void('');"></br>Buscar por CIF</a>
+					</form>
+					</br>
+					Contratos asignados por nombre de empresa:
+					</br>
+					<script>
+						function updateHREFempresa() {
+							document.getElementById('eempresa').href = 'adjudicadosEmpresa.html?empresa=' + document.forms[1].empresa.value;
+						}
+					</script>
+					<form>
+						<input type="text" id="empresa" onchange="updateHREFempresa();">
+							<a id="eempresa" href="javascript:alert('Por favor, introduce algÃºn valor.');void('');"></br>Buscar por empresa</a>
+					</form>
+					</br>
+					Contratos asignados por mÃ¡s de:
+					</br>
+					<script>
+						function updateHREFprecio() {
+						    var isnum = /^\d+$/.test(document.forms[2].precio.value);
+							if(isnum){
+								document.getElementById('price').href = 'buscarPorPrecio.html?precio=' + document.forms[2].precio.value;
+							}
+							else
+								alert("Por favor, introduce Ãºnicamente dÃ­gitos.");
+						}
+					</script>
+					<form>
+						<input type="text" id="precio" onchange="updateHREFprecio();"> â‚¬
+						<a id="price" href="javascript:alert('Por favor, introduce algÃºn valor.');void('');"></br>Buscar por precio</a>
+					</form>
+					</br>
+					Contratos asignados por Servicio Gestor:
+					</br>
+					<script>
+						function updateHREFsg() {
+							document.getElementById('serges').href = 'adjudicadosServicioGestor.html?servicio=' + document.forms[3].sg.value;
+						}
+					</script>
+					<form>
+						<input type="text" id="sg" onchange="updateHREFsg();">
+							<a id="serges" href="javascript:alert('Por favor, introduce algÃºn valor.');void('');"></br>Buscar por servicio gestor</a>
+					</form>
+					<script>
+						document.getElementById('cif').value = "";
+						document.getElementById('empresa').value = "";
+						document.getElementById('precio').value = "";
+						document.getElementById('sg').value = "";
+					</script>
+				</p>
+			</div>
+		</div>
+	<script type="text/javascript" src="cordova.js"/>
+	<script type="text/javascript" src="js/index.js"/>
 	</body>
 </html>

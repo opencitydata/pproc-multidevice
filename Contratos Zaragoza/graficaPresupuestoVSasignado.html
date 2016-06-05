@@ -1,99 +1,39 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
+﻿<?xml version="1.0" encoding="ISO-8859-1" ?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es">
 
 	<head>
-		<meta charset="UTF-8">
 		<title>Contratos Zaragoza</title>
-		<link rel="shortcut icon" type="image/x-icon" href="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png">
-		<img class="pull-right" src="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png" alt="Ayuntamiento de Zaragoza" />
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous"/>
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+		<meta name="format-detection" content="telephone=no"/>
+		<meta name="msapplication-tap-highlight" content="no"/>
+		<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width"/>
+		<a href="javascript:history.back()"><img class="pull-left" src="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png" alt="Ayuntamiento de Zaragoza"></a>
+		<link rel="shortcut icon" href="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png">
+		<link rel="stylesheet" type="text/css" href="css/main.css">
+		<meta charset="utf-8" />
 		<script src="js/d3/d3.min.js"></script>
 		<script src="js/jquery-1.10.2.min.js"></script>
 		<script src="js/consultas/graficaPresupuestoVSasignado.js"></script>
-		<meta charset="utf-8" /> 
 		<style>
 			.liquidFillGaugeText { font-family: Helvetica; font-weight: bold; }
 		</style>
 	</head>
 	<body>
-		<div id="svg"></div>
-		<script>
-			svgPresupuestovsAsignado();
-		</script>
-		
-		<script language="JavaScript">
-			
-			var config1 = liquidFillGaugeDefaultSettings();
-				config1.circleColor = "#FF7777";
-				config1.textColor = "#FF4444";
-				config1.waveTextColor = "#FFAAAA";
-				config1.waveColor = "#FFDDDD";
-				config1.circleThickness = 0.2;
-				config1.textVertPosition = 0.2;
-				config1.waveAnimateTime = 1000;
-			var gauge2= loadLiquidFillGauge("fillgauge2", 33, config1);
-			var config2 = liquidFillGaugeDefaultSettings();
-				config2.circleColor = "#D4AB6A";
-				config2.textColor = "#553300";
-				config2.waveTextColor = "#805615";
-				config2.waveColor = "#AA7D39";
-				config2.circleThickness = 0.1;
-				config2.circleFillGap = 0.2;
-				config2.textVertPosition = 0.2;
-				config2.waveAnimateTime = 2000;
-				config2.waveHeight = 0.3;
-				config2.waveCount = 1;
-			var gauge3 = loadLiquidFillGauge("fillgauge3", 60.1, config2);
-			var config3 = liquidFillGaugeDefaultSettings();
-				config3.textVertPosition = 0.8;
-				config3.waveAnimateTime = 5000;
-				config3.waveHeight = 0.15;
-				config3.waveAnimate = false;
-				config3.waveOffset = 0.25;
-				config3.valueCountUp = false;
-				config3.displayPercent = false;
-			var gauge4 = loadLiquidFillGauge("fillgauge4", 50, config3);
-			var config4 = liquidFillGaugeDefaultSettings();
-				config4.circleThickness = 0.15;
-				config4.circleColor = "#808015";
-				config4.textColor = "#555500";
-				config4.waveTextColor = "#FFFFAA";
-				config4.waveColor = "#AAAA39";
-				config4.textVertPosition = 0.8;
-				config4.waveAnimateTime = 1000;
-				config4.waveHeight = 0.05;
-				config4.waveAnimate = false;
-				config4.waveRise = true;
-				config4.waveHeightScaling = false;
-				config4.waveOffset = 0.25;
-				config4.textSize = 0.75;
-				config4.waveCount = 3;
-			var gauge5 = loadLiquidFillGauge("fillgauge5", 60.44, config4);
-			var config5 = liquidFillGaugeDefaultSettings();
-				config5.circleThickness = 0.4;
-				config5.circleColor = "#6DA398";
-				config5.textColor = "#0E5144";
-				config5.waveTextColor = "#6DA398";
-				config5.waveColor = "#246D5F";
-				config5.textVertPosition = 0.52;
-				config5.waveAnimateTime = 5000;
-				config5.waveHeight = 0;
-				config5.waveAnimate = true;
-				config5.waveCount = 2;
-				config5.waveOffset = 0.25;
-				config5.textSize = 1.2;
-				config5.minValue = 30;
-				config5.maxValue = 150
-				config5.displayPercent = false;
-			var gauge6 = loadLiquidFillGauge("fillgauge6", 120, config5);
-
-			function NewValue(){
-				if(Math.random() > .5){
-					return Math.round(Math.random()*100);
-				} else {
-					return (Math.random()*100).toFixed(1);
-				}
-			}
-		</script>
+		<div class="app">
+			<div class="container">
+				<h1>Presupuestos y precios de adjudicación de contratos</h1>
+				<div id="svg"></div>
+				<script>
+						if ((screen.width<1024) && (screen.height<768))
+							svgPresupuestovsAsignadoMovil();
+						else
+							svgPresupuestovsAsignado();
+				</script>
+			</div>
+		</div>
 	</body>
 
 </html>

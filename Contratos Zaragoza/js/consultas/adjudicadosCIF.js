@@ -1,4 +1,4 @@
-function adjudicadosCIF(){
+﻿function adjudicadosCIF(){
 //Se cogen los valores pasados por URI.
 //Se dividen por "&"
 var paramstr = window.location.search.substr(1);
@@ -38,11 +38,12 @@ var query = 'SELECT DISTINCT ?uri min(?titulo) as ?Titulo min(?servicioGestor) a
 //Se almacena en data toda la información devuelta en la consulta
 $.getJSON(SPARQL_ENDPOINT + '?query=' + encodeURIComponent(query) + '&format=application%2Fsparql-results%2Bjson&timeout=0')
 	.success(function(data) {
+		console.log(data);
 		var feature;
+		var resul;
 		//Se crea una tabla para mostrar los datos en ella
-		var table = '<table>';
-		//Se le asigna un nombre a cada columna de la tabla
-		table += '<tr> <td><h2>Título</h2></td> <td><h2>Servicio Gestor</h2></td> <td><h2>Precio</h2></td> </tr>';
+		var table = '';
+		var precioTotal = 0;
 		//Se recorre el json devuelto en la consulta
 		for (var i = 0; i < data.results.bindings.length; i++) {
 			//Por cada elemento devuelto se pasa la información a la tabla
@@ -80,14 +81,37 @@ $.getJSON(SPARQL_ENDPOINT + '?query=' + encodeURIComponent(query) + '&format=app
 				var precio = new Object();
 				precio.value = feature.precio.value;
 				}
-			table += '<tr><td>' + '<a href='+feature.uri.value+'>'+feature.Titulo.value+'</a></td>  <td>' + '<a href="adjudicadosPorServicioGestor.html?servicio='+id.value+'">'+servicioGestor.value+'</a></td><td>' + precio.value + '</td></tr>';
 			
+			
+			
+			if(i%2==0)
+				table += '<div class="caso1">';
+			else
+				table += '<div class="caso2">';
+			table += '<div class="row">';
+			table += '<div class="col-xs-4"><p>Titulo</p></div>';
+			table += '<div class="col-xs-8"><p><a href='+feature.uri.value+'>'+feature.Titulo.value+'</a></p></div>';
+			table += '</div>';
+			table += '<div class="row">';
+			table += '<div class="col-xs-4"><p>Servicio Gestor</p></div>';
+			table += '<div class="col-xs-8"><p><a href="adjudicadosPorServicioGestor.html?servicio='+id.value+'&nombre='+servicioGestor.value+'">'+servicioGestor.value+'</a></p></div>';
+			table += '</div>';
+			table += '<div class="row">';
+			table += '<div class="col-xs-4"><p>Precio</p></div>';
+			table += '<div class="col-xs-8"><p>' + Math.round(parseFloat(precio.value)).toLocaleString() + ' €</p></div>';
+			table += '</div>';
+			table += '</div>';
+			precioTotal += Math.round(parseFloat(precio.value));
 		}
-		//Se le da valor al div "empresa" del HTML
-		document.getElementById("empresa").innerHTML = resul;
-		//Se cierra la tabla
 		table += '</table>';
+		if (data.results.bindings.length == 0)
+			table = '</br><h3>No se encontaron empresas con dicho CIF</h3>';
+		//Se le da valor al div "empresa" del HTML
+		if (resul != null)
+			document.getElementById("empresa").innerHTML = resul;
+		//Se cierra la tabla
 		//Se inserta el contenido de la tabla en el elemento "tabla" creado en el HTML
+		document.getElementById("datos").innerHTML = Math.round(parseFloat(precioTotal)).toLocaleString();
 		document.getElementById("tabla").innerHTML = table;
 });
 }

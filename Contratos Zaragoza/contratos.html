@@ -1,28 +1,68 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
+﻿<?xml version="1.0" encoding="ISO-8859-1" ?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es">
 
 	<head>
 		<title>Contratos Zaragoza</title>
-		<link rel="shortcut icon" type="image/x-icon" href="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png">
-		<img class="pull-right" src="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png" alt="Ayuntamiento de Zaragoza" />
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous"/>
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+		<meta name="format-detection" content="telephone=no"/>
+		<meta name="msapplication-tap-highlight" content="no"/>
+		<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width"/>
+		<a href="javascript:history.back()"><img class="pull-left" src="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png" alt="Ayuntamiento de Zaragoza"></a>
+		<link rel="shortcut icon" href="http://www.zaragoza.es/cont/paginas/bs/img/aytoLogoCorto.png">
+		<link rel="stylesheet" type="text/css" href="css/main.css">
+		<meta charset="utf-8" /> 
 		<script src="js/jquery-1.10.2.min.js"></script>
 		<script src="js/consultas/contratos.js"></script>
 	</head>
 
 
 	<body>
-		
-		<h1>Lista de contratos</h1>
-		<p id="fecha">
-		</p>
-		<p id="tabla">
-			<script type="text/javascript">
-				var fecha = new Date();
-				var ano = fecha.getFullYear();
-				contratos("?uri",ano,"URI");
-			</script>
-		</p>
-		
+		<div class="app">
+			<div class="container">
+				<h1>Lista de contratos</h1>
+				<div class="row">
+					<div class="col-xs-4">
+						<select name="ordenar" id="ordenar_por" class="form-control">
+							<option value="?Titulo">Titulo</option>
+							<option value="desc(?Titulo)">Titulo Descendente</option>
+							<option value="?Nombre">Empresa</option>
+							<option value="desc(?Nombre)">Empresa Descendente</option>
+							<option value="?Cif">CIF</option>
+							<option value="desc(?Cif)">CIF Descendente</option>
+							<option value="?ServicioGestor">Servicio Gestor</option>
+							<option value="desc(?ServicioGestor)">Servicio Gestor Descendente</option>
+							<option value="?precio">Precio</option>
+							<option value="desc(?precio)">Precio Descendente</option>
+							<option value="?fechaFormalizacion">Fecha Formalización</option>
+							<option value="desc(?fechaFormalizacion)">Fecha Formalización Descendente</option>
+						</select>
+					</div>
+					<div class="col-xs-4">
+						<p id="sel_fecha"/>
+					</div>
+					<div class="col-xs-2">
+						<button type="button" class="btn btn-default" onclick="auxiliar()">Actualizar</button>
+					</div>
+					<br>
+					</br>
+					<script>
+						sel_fecha();
+					</script>
+				</div>
+			</div>
+				<div class="container">
+						<p id="tabla">
+							<script type="text/javascript">
+								var fecha = new Date();
+								var ano_actual = fecha.getFullYear();
+								contratos("?fechaFormalizacion",ano_actual);
+							</script>
+						</p>
+				</div>
+		</div>
 	</body>
 
 </html>

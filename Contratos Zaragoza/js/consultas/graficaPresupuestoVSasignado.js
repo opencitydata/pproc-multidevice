@@ -1,40 +1,14 @@
-/*!
+﻿/*!
  * @license Open source under BSD 2-clause (http://choosealicense.com/licenses/bsd-2-clause/)
  * Copyright (c) 2015, Curtis Bratton
  * All rights reserved.
  *
  * Liquid Fill Gauge v1.1
  */
-function svgPresupuestovsAsignado(){
-	//Se realiza la consulta SPARQL
+function svgPresupuestovsAsignadoMovil(){
 	var f = new Date();
 	var year = f.getFullYear();
 	var SPARQL_ENDPOINT = 'http://datos.zaragoza.es/sparql';
-	/*var query = 'PREFIX pproc: <http://contsem.unizar.es/def/sector-publico/pproc#> \
-		PREFIX dcterms: <http://purl.org/dc/terms/> \
-		SELECT DISTINCT ?uri ?titulo ?presu/1000 as ?presupuesto ?CIF ?pre/1000 as ?adjudicadoPor ?empresa \
-		WHERE  \
-		{ \
-		?uri a <http://contsem.unizar.es/def/sector-publico/pproc#Contract>. \
-		?uri dcterms:title ?titulo. \
-		?uri <http://contsem.unizar.es/def/sector-publico/pproc#contractObject> ?pepe. \
-		?pepe <http://contsem.unizar.es/def/sector-publico/pproc#contractEconomicConditions> ?luis. \
-		?luis <http://contsem.unizar.es/def/sector-publico/pproc#budgetPrice> ?pablo. \
-		?pablo <http://purl.org/goodrelations/v1#hasCurrencyValue> ?presu. \
-		?pablo <http://purl.org/goodrelations/v1#valueAddedTaxIncluded> "true"^^xsd:boolean. \
-		?uri pc:tender ?tender .\
-		?tender pproc:awardDate ?awardDate .\
-		?uri <http://purl.org/procurement/public-contracts#tender> ?a. \
-		?a <http://purl.org/procurement/public-contracts#offeredPrice> ?po. \
-		?po <http://purl.org/goodrelations/v1#hasCurrencyValue> ?pre. \
-		?po <http://purl.org/goodrelations/v1#valueAddedTaxIncluded> "true"^^xsd:boolean. \
-		?a   <http://purl.org/procurement/public-contracts#supplier> ?empresaid. \
-		?empresaid <http://schema.org/name> ?empresa. \
-		?empresaid <http://www.w3.org/ns/org#identifier> ?CIF. \
-		FILTER regex(?awardDate, "2015")\
-		} \
-		ORDER BY DESC(?presu)\
-		LIMIT 20';*/
 	var query = 'SELECT ?uri ?titulo ?presupuesto ?Precio ?presupuesto - ?Precio as ?Diff 100*?Precio/?presupuesto as ?Porcentaje\
 	WHERE\
 	{\
@@ -72,18 +46,101 @@ $.getJSON(SPARQL_ENDPOINT + '?query=' + encodeURIComponent(query) + '&format=app
 		var feature;
 		
 		//Se crea una tabla para mostrar los datos en ella
-		var dev = '<table><tr><td></td> <td></td></tr>';
+		var dev = '';
 		//Se le asigna un nombre a cada columna de la tabla
 		//Se recorre el json devuelto en la consulta
 		for (var i = 0; i < data.results.bindings.length; i++) {
 			//Por cada elemento devuelto se pasa la información a la tabla
 			feature = data.results.bindings[i];
-			var x = i+1;	
-			dev += "<tr><td><svg id= \"fillgauge" + x + "\" width=\"75%\" height=\""+ Math.log10(feature.presupuesto.value)*12 + "\" ></svg></td> <td><a  href=\""+feature.uri.value+'">'+feature.titulo.value+"</a></br>Presupuesto: "+feature.presupuesto.value+" &nbsp &nbsp &nbsp Precio: "+feature.Precio.value+"</td></tr>";
+			var x = i+1;
+			if(i%2==0)
+				dev += '<div class="caso1">';
+			else
+				dev += '<div class="caso2">';
+			dev += '<div class="row">';
+			dev += '<div class="col-xs-4"><p>Título</p></div>';
+			dev += '<div class="col-xs-8"><p><a href="'+feature.uri.value+'">'+feature.titulo.value+'</a></p></div>';
+			dev += '</div>';
+			dev += '<div class="row">';
+			dev += '<div class="col-xs-4"><p>Presupuesto</p></div>';
+			dev += '<div class="col-xs-8"><p>'+ Math.round(parseFloat(feature.presupuesto.value)).toLocaleString() +' €</a></p></div>';
+			dev += '</div>';
+			dev += '<div class="row">';
+			dev += '<div class="col-xs-4"><p>Precio</p></div>';
+			dev += '<div class="col-xs-8"><p>'+Math.round(parseFloat(feature.Precio.value)).toLocaleString()+' €</a></p></div>';
+			dev += '</div>';
+			dev += '<div class="row">';
+			dev += '<div class="col-xs-4"><p>Porcentaje</p></div>';
+			dev += '<div class="col-xs-8"><p>'+Math.round(100 * feature.Precio.value/feature.presupuesto.value).toLocaleString()+'%</a></p></div>';
+			dev += '</div>';
+			dev += '</div>';
+		}
+		//Se inserta el contenido de la tabla en el elemento "tabla" creado en el HTML
+		document.getElementById("svg").innerHTML = dev;
+		
+		
+});
+}
+function svgPresupuestovsAsignado(){
+	//Se realiza la consulta SPARQL
+	var f = new Date();
+	var year = f.getFullYear();
+	var SPARQL_ENDPOINT = 'http://datos.zaragoza.es/sparql';
+	var query = 'SELECT ?uri ?titulo ?presupuesto ?Precio ?presupuesto - ?Precio as ?Diff 100*?Precio/?presupuesto as ?Porcentaje\
+	WHERE\
+	{\
+		{\
+			SELECT DISTINCT ?uri ?presupuesto\
+			WHERE{\
+				?uri a pproc:Contract.\
+				?uri pproc:contractObject ?objeto.\
+				?objeto pproc:contractEconomicConditions ?economia.\
+				?economia pproc:budgetPrice ?budget.\
+				?budget<http://purl.org/goodrelations/v1#hasCurrencyValue> ?presupuesto.\
+				?budget<http://purl.org/goodrelations/v1#valueAddedTaxIncluded> "true"^^xsd:boolean.\
+				FILTER(?presupuesto > 0)\
+			}\
+		}\
+		{\
+			SELECT ?uri ?titulo SUM(?precio) as ?Precio\
+			WHERE{\
+				?uri a pproc:Contract.\
+				?uri pc:tender ?tender.\
+				?uri dcterms:title ?titulo.\
+				?tender a pproc:FormalizedTender.\
+				?tender pc:offeredPrice ?offeredPriceVAT.\
+				?offeredPriceVAT gr:hasCurrencyValue ?precio.\
+				?offeredPriceVAT gr:valueAddedTaxIncluded "true"^^xsd:boolean.\
+			}\
+			GROUP BY ?uri ?titulo \
+		}\
+	}\
+	ORDER BY desc(?Diff)\
+	LIMIT 20';
+//Se almacena en data toda la información devuelta en la consulta
+$.getJSON(SPARQL_ENDPOINT + '?query=' + encodeURIComponent(query) + '&format=application%2Fsparql-results%2Bjson&timeout=0')
+   .success(function(data) {
+		var feature;
+		
+		//Se crea una tabla para mostrar los datos en ella
+		var dev = '';
+		//Se le asigna un nombre a cada columna de la tabla
+		//Se recorre el json devuelto en la consulta
+		for (var i = 0; i < data.results.bindings.length; i++) {
+			//Por cada elemento devuelto se pasa la información a la tabla
+			feature = data.results.bindings[i];
+			var x = i+1;
+			if(i%2==0)
+				dev += '<div class="caso1">';
+			else
+				dev += '<div class="caso2">';
+			dev += '<div class="row">';
+			dev += "<div class=\"col-xs-2\"><br> <svg id= \"fillgauge" + x + "\" width=\"75%\" height=\""+ Math.log10(feature.presupuesto.value)*10 + "\" ></svg></br></br></div>";
+			dev += "<div class=\"col-xs-8\"></br><a  href=\""+feature.uri.value+'">'+feature.titulo.value+"</a></br>Presupuesto: "+Math.round(parseFloat(feature.presupuesto.value)).toLocaleString()+" € &nbsp &nbsp &nbsp Precio: "+Math.round(parseFloat(feature.Precio.value)).toLocaleString()+" €</div>";
+			dev += '</div>';
+			dev+= '</div>';
 		}
 		console.log(dev);
-		//Se cierra la tabla
-			dev += '</table>';
 		//Se inserta el contenido de la tabla en el elemento "tabla" creado en el HTML
 		document.getElementById("svg").innerHTML = dev;
 		for (var i = 0; i < data.results.bindings.length; i++){
