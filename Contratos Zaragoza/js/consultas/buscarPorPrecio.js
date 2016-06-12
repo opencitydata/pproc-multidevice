@@ -17,25 +17,27 @@ var fin = params['precio'];
 document.getElementById("precio").innerHTML = fin;
 //Se realiza la consulta SPARQL
 var SPARQL_ENDPOINT = 'http://datos.zaragoza.es/sparql';
-var query = 'SELECT DISTINCT ?uri min(?titulo) as ?Titulo ?nombre ucase(replace(replace(replace(?cif," ",""),"-",""),"/.","")) as ?Cif min(?servicioGestor) as ?ServicioGestor ?id ?precio\
+var query = 'SELECT DISTINCT ?uri min(?titulo) as ?Titulo ?nombre ?fechaFormalizacion ucase(replace(replace(replace(?cif," ",""),"-",""),"/.","")) as ?Cif min(?servicioGestor) as ?ServicioGestor ?id ?precio\
 		WHERE {\
 			?uri a pproc:Contract.\
 			?uri dcterms:title ?titulo.\
 			?uri pc:tender ?tender.\
 			?tender a pproc:FormalizedTender.\
-			OPTIONAL {?tender   pc:supplier ?empresaid.}\
 			?tender pproc:formalizedDate ?fechaFormalizacion.\
-			OPTIONAL {?empresaid <http://www.w3.org/ns/org#identifier> ?cif.}\
-			OPTIONAL {?empresaid <http://schema.org/name> ?nombre.}\
-			OPTIONAL {?uri pproc:managingDepartment ?managingDepartment.}\
-			OPTIONAL {?managingDepartment dcterms:title ?servicioGestor.}\
-			OPTIONAL {?managingDepartment dcterms:identifier ?id.}\
+			OPTIONAL {?tender   pc:supplier ?empresaid.\
+					  ?empresaid <http://www.w3.org/ns/org#identifier> ?cif.}\
+			OPTIONAL {?tender   pc:supplier ?empresaid.\
+					  ?empresaid <http://schema.org/name> ?nombre.}\
+			OPTIONAL {?uri pproc:managingDepartment ?managingDepartment.\
+					  ?managingDepartment dcterms:title ?servicioGestor.}\
+			OPTIONAL {?uri pproc:managingDepartment ?managingDepartment.\
+					  ?managingDepartment dcterms:identifier ?id.}\
 			OPTIONAL {?tender pc:offeredPrice ?offeredPriceVAT.\
 					  ?offeredPriceVAT gr:hasCurrencyValue ?precio.\
 					  ?offeredPriceVAT gr:valueAddedTaxIncluded "true"^^xsd:boolean.}\
 			FILTER(xsd:integer(?precio) > xsd:integer("'+fin+'"))\
 		}\
-		GROUP BY ?uri ?nombre ?cif ?id ?precio\
+		GROUP BY ?uri ?nombre ?cif ?id ?precio ?fechaFormalizacion \
 		ORDER BY desc(?precio)';
 //Se almacena en data toda la información devuelta en la consulta
 $.getJSON(SPARQL_ENDPOINT + '?query=' + encodeURIComponent(query) + '&format=application%2Fsparql-results%2Bjson&timeout=0')
@@ -96,6 +98,10 @@ $.getJSON(SPARQL_ENDPOINT + '?query=' + encodeURIComponent(query) + '&format=app
 			table += '<div class="row">';
 			table += '<div class="col-xs-4"><p>Servicio Gestor</p></div>';
 			table += '<div class="col-xs-8"><p><a href="adjudicadosPorServicioGestor.html?servicio='+id.value+'">'+servicioGestor.value+'</a></p></div>';
+			table += '</div>';
+			table += '<div class="row">';
+			table += '<div class="col-xs-4"><p>Fecha de formalización</p></div>';
+			table += '<div class="col-xs-8"><p>' + feature.fechaFormalizacion.value + '</p></div>';
 			table += '</div>';
 			table += '<div class="row">';
 			table += '<div class="col-xs-4"><p>Precio</p></div>';

@@ -1,11 +1,12 @@
 //Se realiza la consulta SPARQL
-function presupuestoProcedimiento() {
+function presupuestoProcedimiento(ano) {
 var SPARQL_ENDPOINT = 'http://datos.zaragoza.es/sparql';
 var query ='SELECT DISTINCT SUM(?presupuesto) as ?Presupuesto ?procedimiento\
 			WHERE{\
 				?uri a pproc:Contract.\
                 ?uri pc:tender ?tender.\
 				?tender a pproc:FormalizedTender.\
+				?tender pproc:formalizedDate ?fechaFormalizacion.\
                 ?uri pproc:contractProcedureSpecifications ?procedureType.\
 		        ?procedureType pproc:procedureType  ?procedimiento.\
 				?uri pproc:contractObject ?objeto.\
@@ -13,6 +14,7 @@ var query ='SELECT DISTINCT SUM(?presupuesto) as ?Presupuesto ?procedimiento\
 				?economia pproc:budgetPrice ?budget.\
 				?budget<http://purl.org/goodrelations/v1#hasCurrencyValue> ?presupuesto.\
 				?budget<http://purl.org/goodrelations/v1#valueAddedTaxIncluded> "true"^^xsd:boolean.\
+				FILTER ( regex(?fechaFormalizacion, "'+ano+'"))\
 				FILTER(?presupuesto > 0)\
 			}\
 GROUP BY ?procedimiento \
@@ -67,4 +69,27 @@ $.getJSON(SPARQL_ENDPOINT + '?query=' + encodeURIComponent(query) + '&format=app
 		//Se inserta el contenido de la tabla en el elemento "tabla" creado en el HTML
 		document.getElementById("tabla").innerHTML = table;
 });
+}
+
+function sel_fecha (){
+	var fecha = new Date();
+	var ano = fecha.getFullYear();
+	var ano1 = ano-1;
+	var ano2 = ano-2;
+	var ano3 = ano-3;
+	var ano4 = ano-4;
+	var impr = '';
+	impr += '<select name="ano" id="ano_sel" class="form-control">'; 
+	impr += '<option value="'+ano+'">'+ano+'</option>';
+	impr += '<option value="'+ano1+'">'+ano1+'</option>';
+	impr += '<option value="'+ano2+'">'+ano2+'</option>';
+	impr += '<option value="'+ano3+'">'+ano3+'</option>';
+	impr += '<option value="'+ano4+'">'+ano4+'</option>';
+	impr += '</select>';
+	document.getElementById("sel_fecha").innerHTML = impr;
+}
+
+function auxiliar() {
+	var ano = document.getElementById("ano_sel").value;
+	presupuestoProcedimiento(ano);
 }
