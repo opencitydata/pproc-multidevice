@@ -24,24 +24,9 @@
 		<div class="app">
 			<div class="container">
 				<h1>Totales y porcentajes de presupuestos de los contratos adjudicados, agrupados por tipo de procedimiento</h1>
-				<div class="row">
-					<div class="col-xs-4">
-						<p id="sel_fecha"/>
-					</div>
-					<div class="col-xs-2">
-						<button type="button" class="btn btn-default" onclick="auxiliar()">Actualizar</button>
-					</div>
-					<br>
-					</br>
-					<script>
-						sel_fecha();
-					</script>
-				</div>
 				<p id="tabla">
 					<script type="text/javascript">
-						var fecha = new Date();
-						var ano_actual = fecha.getFullYear();
-						presupuestoProcedimiento(ano_actual);
+						presupuestoProcedimiento();
 					</script>
 				</p>
 			</div>
