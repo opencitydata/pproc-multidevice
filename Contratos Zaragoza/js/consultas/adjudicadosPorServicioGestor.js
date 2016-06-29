@@ -35,25 +35,45 @@ document.getElementById("tabla").innerHTML = table;
 }
 else{
 var SPARQL_ENDPOINT = 'http://datos.zaragoza.es/sparql';
-var query = 'SELECT DISTINCT ?uri min(?titulo) as ?Titulo ?fechaFormalizacion ?nombre ucase(replace(replace(replace(?cif," ",""),"-",""),"/.","")) as ?Cif ?precio\
+var query = 'SELECT DISTINCT ?uri min(?titulo) as ?Titulo ?fechaFormalizacion ?nombre ucase(replace(replace(replace(?cif," ",""),"-",""),"/.","")) as ?Cif ?precio \
+WHERE { \
+  ?uri a pproc:Contract. \
+  ?uri dcterms:title ?titulo. \
+  ?uri pc:tender ?tender. \
+  ?tender a pproc:FormalizedTender. \
+  ?tender pproc:formalizedDate ?fechaFormalizacion. \
+  OPTIONAL {?tender pc:supplier ?empresaid. \
+	    ?empresaid <http://www.w3.org/ns/org#identifier> ?cif. \
+            OPTIONAL {?empresaid <http://schema.org/name> ?nombre.}} \
+  OPTIONAL {?uri pproc:managingDepartment ?managingDepartment. \
+	    ?managingDepartment dcterms:title ?servicioGestor. \
+            OPTIONAL {?managingDepartment dcterms:identifier ?id.}} \
+  OPTIONAL {?tender pc:offeredPrice ?offeredPriceVAT. \
+	    ?offeredPriceVAT gr:hasCurrencyValue ?precio. \
+            ?offeredPriceVAT gr:valueAddedTaxIncluded "true"^^xsd:boolean.} \
+  FILTER(regex(?id,"'+fin+'"))  \
+} GROUP BY ?uri ?nombre ?cif ?id ?precio ?fechaFormalizacion';
+/*var query = 'SELECT DISTINCT ?uri min(?titulo) as ?Titulo ?fechaFormalizacion ?nombre ucase(replace(replace(replace(?cif," ",""),"-",""),"/.","")) as ?Cif ?precio\
 		WHERE {\
 			?uri a pproc:Contract.\
 			?uri dcterms:title ?titulo.\
 			?uri pc:tender ?tender.\
 			?tender a pproc:FormalizedTender.\
-			OPTIONAL {?tender   pc:supplier ?empresaid.}\
 			?tender pproc:formalizedDate ?fechaFormalizacion.\
-			OPTIONAL {?empresaid <http://www.w3.org/ns/org#identifier> ?cif.}\
-			OPTIONAL {?empresaid <http://schema.org/name> ?nombre.}\
-			OPTIONAL {?uri pproc:managingDepartment ?managingDepartment.}\
-			OPTIONAL {?managingDepartment dcterms:title ?servicioGestor.}\
-			OPTIONAL {?managingDepartment dcterms:identifier ?id.}\
+			OPTIONAL {?tender   pc:supplier ?empresaid.\
+					  ?empresaid <http://www.w3.org/ns/org#identifier> ?cif.}\
+			OPTIONAL {?tender   pc:supplier ?empresaid.\
+					  ?empresaid <http://schema.org/name> ?nombre.}\
+			OPTIONAL {?uri pproc:managingDepartment ?managingDepartment.\
+					  ?managingDepartment dcterms:title ?servicioGestor.}\
+			OPTIONAL {?uri pproc:managingDepartment ?managingDepartment.\
+					  ?managingDepartment dcterms:identifier ?id.}\
 			OPTIONAL {?tender pc:offeredPrice ?offeredPriceVAT.\
 					  ?offeredPriceVAT gr:hasCurrencyValue ?precio.\
 					  ?offeredPriceVAT gr:valueAddedTaxIncluded "true"^^xsd:boolean.}\
 			FILTER(regex(?id,"'+fin+'")) \
 		}\
-		GROUP BY ?uri ?nombre ?cif ?id ?precio ?fechaFormalizacion';
+		GROUP BY ?uri ?nombre ?cif ?id ?precio ?fechaFormalizacion';*/
 //Se almacena en data toda la información devuelta en la consulta
 $.getJSON(SPARQL_ENDPOINT + '?query=' + encodeURIComponent(query) + '&format=application%2Fsparql-results%2Bjson&timeout=0')
 	.success(function(data) {
