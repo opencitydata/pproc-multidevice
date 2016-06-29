@@ -5,24 +5,24 @@ var filtroyear = 'FILTER ( regex(?fechaFormalizacion, "'+year+'"))';
 var filtrofiltro = 'ORDER BY '+filtro+'';
 console.log(filtrofiltro);
 var SPARQL_ENDPOINT = 'http://datos.zaragoza.es/sparql';
-var query ='SELECT DISTINCT ?uri  str(min(?titulo)) as ?Titulo str(min(?nombre)) as ?Nombre ?fechaFormalizacion ucase(replace(replace(replace(?cif," ",""),"-",""),"/.","")) as ?Cif min(?servicioGestor) as ?ServicioGestor ?id ?precio \
-	WHERE {\
-		?uri a pproc:Contract.\
-		?uri dcterms:title ?titulo.\
-		?uri pc:tender ?tender.\
-		?tender a pproc:FormalizedTender.\
-		?tender pproc:formalizedDate ?fechaFormalizacion.\
-		OPTIONAL {?tender   pc:supplier ?empresaid.\
-			      ?empresaid <http://www.w3.org/ns/org#identifier> ?cif.\
-		          ?empresaid <http://schema.org/name> ?nombre.}\
-		OPTIONAL {?uri pproc:managingDepartment ?managingDepartment.\
-				  ?managingDepartment dcterms:title ?servicioGestor.}\
-		OPTIONAL {?uri pproc:managingDepartment ?managingDepartment.\
-				  ?managingDepartment dcterms:identifier ?id.}\
-		OPTIONAL {?tender pc:offeredPrice ?offeredPriceVAT.\
-				?offeredPriceVAT gr:hasCurrencyValue ?precio.\
-				?offeredPriceVAT gr:valueAddedTaxIncluded "true"^^xsd:boolean.}\
-	'+filtroyear+'}\
+var query = 'SELECT DISTINCT ?uri  str(min(?titulo)) as ?Titulo str(min(?nombre)) as ?Nombre ?fechaFormalizacion ucase(replace(replace(replace(?cif," ",""),"-",""),"/.","")) as ?Cif min(?servicioGestor) as ?ServicioGestor ?id ?precio \
+WHERE {\
+  ?uri a pproc:Contract.\
+  ?uri dcterms:title ?titulo.\
+  ?uri pc:tender ?tender.\
+  ?tender a pproc:FormalizedTender.\
+  ?tender pproc:formalizedDate ?fechaFormalizacion.\
+  '+filtroyear+'\
+  OPTIONAL {?tender pc:supplier ?empresaid.\
+	    ?empresaid <http://www.w3.org/ns/org#identifier> ?cif.\
+            OPTIONAL {?empresaid <http://schema.org/name> ?nombre.}}\
+  OPTIONAL {?uri pproc:managingDepartment ?managingDepartment.\
+	    ?managingDepartment dcterms:title ?servicioGestor\
+            OPTIONAL {?managingDepartment dcterms:identifier ?id.}}\
+  OPTIONAL {?tender pc:offeredPrice ?offeredPriceVAT.\
+	    ?offeredPriceVAT gr:hasCurrencyValue ?precio.\
+	    ?offeredPriceVAT gr:valueAddedTaxIncluded "true"^^xsd:boolean.}\
+}\
 GROUP BY ?uri ?cif ?id ?precio ?fechaFormalizacion \
 ORDER BY '+filtro;
 
